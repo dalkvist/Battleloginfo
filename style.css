@@ -1,0 +1,10 @@
+#stickyKits{
+	position: fixed;
+	top: 125px;
+	left: 25px;
+	z-index: 100;
+}
+
+#stickyKits div{
+	cursor: pointer;
+}

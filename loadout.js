@@ -13,17 +13,32 @@ var assocIn = function (m, ks, v){
     return m;
 };
 
+$("body").append("<div id='stickyKits'><p>Make sticky</p><div data-id='0'>ASSAULT</div><div data-id='1'>ENGINEER</div><div data-id='2'>SUPPORT</div><div data-id='3'>RECON</div></div>");
+
+$("#stickyKits div").live("click", function(){
+	battleloginfo.changeKit($(this).attr("data-id"));
+});
+
 var battleloginfo = {};
 
-battleloginfo.changeKitTrys = 0;
+battleloginfo.getCurrentLoadout = function(){
+	if(loadout != null && loadout.getModel != null){
+		var model = loadout.getModel();
+		if(model.get != null){
+			var currentLoadout = model.get("loadout");
+			if(currentLoadout != null){
+				battleloginfo.lastSeenKit = currentLoadout.selectedKit;
+				return currentLoadout;
+			}
+		}
+	}
+}
 
+battleloginfo.changeKitTrys = 0;
 battleloginfo.changeKit = function(id){
 	if(id != null){
-		if(loadout != null && loadout.getModel != null){
-			var model = loadout.getModel();
-			if(model.get != null){
-				var currentLoadout = model.get("loadout");
-				if(currentLoadout != null){
+		var currentLoadout = battleloginfo.getCurrentLoadout();
+		if(currentLoadout != null){
 					$.post("/bf4/loadout/save/", 
 						{"loadout": JSON.stringify(assocIn(currentLoadout, ["selectedKit"], id))}, 
 						function(){ 
@@ -31,8 +46,6 @@ battleloginfo.changeKit = function(id){
 							battleloginfo.runKeepCurrentKit = true;
 							window.setTimeout(battleloginfo.keepCurrentKit, 10000);
 						});
-				}
-			}
 		}
 		else{
 			if(battleloginfo.changeKitTrys < 10){
@@ -46,19 +59,13 @@ battleloginfo.runKeepCurrentKit = false;
 battleloginfo.keepCurrentKitRunning = false;
 battleloginfo.keepCurrentKit = function(){
 	if(battleloginfo.runKeepCurrentKit == true && battleloginfo.keepCurrentKitRunning == false && battleloginfo.stickyKit != null){
-		if(loadout != null && loadout.getModel != null){
-			var model = loadout.getModel();
-			if(model.get != null){
-				var currentLoadout = model.get("loadout");
-				if(currentLoadout != null){
-					battleloginfo.lastSeenKit = currentLoadout.selectedKit;
-					if(currentLoadout.selectedKit != battleloginfo.stickyKit){
-						battleloginfo.changeKit(battleloginfo.stickyKit);
-					}
-				}
-			}
-		}
 		this.keepCurrentKitRunning = true;
+		var kit = battleloginfo.getCurrentLoadout();
+		if(kit != null){				
+			if(kit.selectedKit != battleloginfo.stickyKit){
+				battleloginfo.changeKit(battleloginfo.stickyKit);
+			}
+		}		
 		window.setTimeout(battleloginfo.keepCurrentKit, 10000);
 	}
 }

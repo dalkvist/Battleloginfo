@@ -10,10 +10,13 @@
     	"activeTab",
     	"tabs"
   	], 
+    "browser_action": {
+      },
   	  "content_scripts": [
     {
       "matches": ["*://battlelog.battlefield.com/*"],
       "js": ["script.js"],
+      "css": ["style.css"],
       "run_at": "document_end"
     }
   ],
