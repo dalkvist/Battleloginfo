@@ -1,0 +1,22 @@
+{
+	"manifest_version": 2,
+  	"name": "battlelog info",
+   	"version": "1.0",
+  	"manifest_version": 2,
+
+  	"permissions": [
+    	"http://battlelog.battlefield.com/",
+    	"https://battlelog.battlefield.com/",
+    	"activeTab",
+    	"tabs"
+  	], 
+  	  "content_scripts": [
+    {
+      "matches": ["*://battlelog.battlefield.com/*"],
+      "js": ["script.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": ["loadout.js"]
+
+}
