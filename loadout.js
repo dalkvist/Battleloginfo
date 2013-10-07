@@ -27,7 +27,8 @@ battleloginfo.changeKit = function(id){
 					$.post("/bf4/loadout/save/", 
 						{"loadout": JSON.stringify(assocIn(currentLoadout, ["selectedKit"], id))}, 
 						function(){ 
-							battleloginfo.currentkit = id;
+							battleloginfo.stickyKit = id;
+							battleloginfo.runKeepCurrentKit = true;
 							window.setTimeout(battleloginfo.keepCurrentKit, 10000);
 						});
 				}
@@ -41,17 +42,18 @@ battleloginfo.changeKit = function(id){
 		}
 	}
 }
-
+battleloginfo.runKeepCurrentKit = false;
 battleloginfo.keepCurrentKitRunning = false;
 battleloginfo.keepCurrentKit = function(){
-	if(keepCurrentKitRunning == false && currentkit != null){
+	if(battleloginfo.runKeepCurrentKit == true && battleloginfo.keepCurrentKitRunning == false && battleloginfo.stickyKit != null){
 		if(loadout != null && loadout.getModel != null){
 			var model = loadout.getModel();
 			if(model.get != null){
 				var currentLoadout = model.get("loadout");
 				if(currentLoadout != null){
-					if(currentLoadout.selectedKit != this.currentkit){
-						this.changeKit(currentkit);
+					battleloginfo.lastSeenKit = currentLoadout.selectedKit;
+					if(currentLoadout.selectedKit != battleloginfo.stickyKit){
+						battleloginfo.changeKit(battleloginfo.stickyKit);
 					}
 				}
 			}
